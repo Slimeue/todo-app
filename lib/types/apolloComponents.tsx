@@ -225,12 +225,67 @@ export type TodoUpdateInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type GetAllTodosQueryVariables = Exact<{
+  input: TodoPaginationInput;
+}>;
+
+
+export type GetAllTodosQuery = { __typename?: 'Query', todoQuery?: { __typename?: 'Todo', getTodosByUserId?: { __typename?: 'TodoSearch', items?: Array<{ __typename?: 'Todo', title: string, description?: string | null, status: string, priority: string, userId: string }> | null } | null } | null };
+
 export type GetAllUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAllUserQuery = { __typename?: 'Query', userQuery: { __typename?: 'User', getAllUsers?: Array<{ __typename?: 'User', id: string, username: string, displayName?: string | null }> | null } };
 
 
+export const GetAllTodosDocument = gql`
+    query GetAllTodos($input: TodoPaginationInput!) {
+  todoQuery {
+    getTodosByUserId(input: $input) {
+      items {
+        title
+        description
+        status
+        priority
+        userId
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAllTodosQuery__
+ *
+ * To run a query within a React component, call `useGetAllTodosQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllTodosQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllTodosQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useGetAllTodosQuery(baseOptions: Apollo.QueryHookOptions<GetAllTodosQuery, GetAllTodosQueryVariables> & ({ variables: GetAllTodosQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllTodosQuery, GetAllTodosQueryVariables>(GetAllTodosDocument, options);
+      }
+export function useGetAllTodosLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllTodosQuery, GetAllTodosQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllTodosQuery, GetAllTodosQueryVariables>(GetAllTodosDocument, options);
+        }
+export function useGetAllTodosSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetAllTodosQuery, GetAllTodosQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllTodosQuery, GetAllTodosQueryVariables>(GetAllTodosDocument, options);
+        }
+export type GetAllTodosQueryHookResult = ReturnType<typeof useGetAllTodosQuery>;
+export type GetAllTodosLazyQueryHookResult = ReturnType<typeof useGetAllTodosLazyQuery>;
+export type GetAllTodosSuspenseQueryHookResult = ReturnType<typeof useGetAllTodosSuspenseQuery>;
+export type GetAllTodosQueryResult = Apollo.QueryResult<GetAllTodosQuery, GetAllTodosQueryVariables>;
 export const GetAllUserDocument = gql`
     query GetAllUser {
   userQuery {
