@@ -17,25 +17,27 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export type CreateSettingsInput = {
-  recieveEmails?: InputMaybe<Scalars['Boolean']['input']>;
-  recieveNotifcations?: InputMaybe<Scalars['Boolean']['input']>;
-  userId: Scalars['Int']['input'];
-};
-
 export type CreateUserArgs = {
   displayName?: InputMaybe<Scalars['String']['input']>;
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
 };
 
+export type Meta = {
+  __typename?: 'Meta';
+  limit: Scalars['Float']['output'];
+  page: Scalars['Float']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createTodo: Todo;
+  createTodoCategory: TodoCategory;
   createUser: User;
-  createUserSettings: UserSetting;
+  createWorkSpace: WorkSpace;
   deleteTodo: Todo;
   updateTodo: Todo;
+  updateTodoCategory: TodoCategory;
 };
 
 
@@ -44,13 +46,18 @@ export type MutationCreateTodoArgs = {
 };
 
 
+export type MutationCreateTodoCategoryArgs = {
+  input: TodoCategoryCreateInput;
+};
+
+
 export type MutationCreateUserArgs = {
   createUserData: CreateUserArgs;
 };
 
 
-export type MutationCreateUserSettingsArgs = {
-  createUserSettingsData: CreateSettingsInput;
+export type MutationCreateWorkSpaceArgs = {
+  input: WorkSpaceCreateInput;
 };
 
 
@@ -63,24 +70,32 @@ export type MutationUpdateTodoArgs = {
   input: TodoUpdateInput;
 };
 
+
+export type MutationUpdateTodoCategoryArgs = {
+  input: TodoCategoryUpdateInput;
+};
+
 export type Query = {
   __typename?: 'Query';
-  /** Get all users */
-  getAllUsers: Array<User>;
-  getTodos?: Maybe<Array<Maybe<Todo>>>;
-  /** Get user by id */
-  getUserById?: Maybe<User>;
+  todoCategoryQuery?: Maybe<TodoCategory>;
+  todoQuery?: Maybe<Todo>;
+  userQuery: User;
 };
 
-
-export type QueryGetUserByIdArgs = {
-  id: Scalars['ID']['input'];
-  username: Scalars['String']['input'];
-};
+export enum Role {
+  Admin = 'ADMIN',
+  Member = 'MEMBER',
+  Owner = 'OWNER',
+  User = 'USER'
+}
 
 export type Todo = {
   __typename?: 'Todo';
-  description: Scalars['String']['output'];
+  category?: Maybe<Scalars['String']['output']>;
+  categoryId?: Maybe<Scalars['ID']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  getTodo?: Maybe<Todo>;
+  getTodosByUserId?: Maybe<TodoSearch>;
   id: Scalars['ID']['output'];
   priority: Scalars['String']['output'];
   status: Scalars['String']['output'];
@@ -88,25 +103,113 @@ export type Todo = {
   userId: Scalars['ID']['output'];
 };
 
-export type User = {
-  __typename?: 'User';
-  displayName?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  password: Scalars['String']['output'];
-  settings?: Maybe<UserSetting>;
-  todos?: Maybe<Array<Todo>>;
-  username: Scalars['String']['output'];
+
+export type TodoGetTodoArgs = {
+  id: Scalars['String']['input'];
 };
 
-export type UserSetting = {
-  __typename?: 'UserSetting';
-  recieveEmails: Scalars['Boolean']['output'];
-  recieveNotifcations: Scalars['Boolean']['output'];
+
+export type TodoGetTodosByUserIdArgs = {
+  input: TodoPaginationInput;
+};
+
+export type TodoCategory = {
+  __typename?: 'TodoCategory';
+  description?: Maybe<Scalars['String']['output']>;
+  getTodoCategories?: Maybe<TodoCategorySearch>;
+  getTodoCategory?: Maybe<TodoCategory>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
   userId: Scalars['ID']['output'];
 };
 
+
+export type TodoCategoryGetTodoCategoriesArgs = {
+  input: TodoCategoryPaginationInput;
+};
+
+
+export type TodoCategoryGetTodoCategoryArgs = {
+  id: Scalars['String']['input'];
+};
+
+export type TodoCategoryCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type TodoCategoryPaginationInput = {
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  limit?: Scalars['Float']['input'];
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  page?: Scalars['Float']['input'];
+  search?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TodoCategorySearch = {
+  __typename?: 'TodoCategorySearch';
+  items?: Maybe<Array<TodoCategory>>;
+  meta: Meta;
+};
+
+export type TodoCategoryUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TodoPaginationInput = {
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  limit?: Scalars['Float']['input'];
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  page?: Scalars['Float']['input'];
+  search?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TodoSearch = {
+  __typename?: 'TodoSearch';
+  items?: Maybe<Array<Todo>>;
+  meta: Meta;
+};
+
+export type User = {
+  __typename?: 'User';
+  displayName?: Maybe<Scalars['String']['output']>;
+  getAllUsers?: Maybe<Array<User>>;
+  getUserById?: Maybe<User>;
+  id: Scalars['ID']['output'];
+  password: Scalars['String']['output'];
+  roles: Array<Role>;
+  salt: Scalars['String']['output'];
+  username: Scalars['String']['output'];
+  workSpaces?: Maybe<Array<WorkSpace>>;
+};
+
+
+export type UserGetUserByIdArgs = {
+  id: Scalars['ID']['input'];
+  username: Scalars['String']['input'];
+};
+
+export type WorkSpace = {
+  __typename?: 'WorkSpace';
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  ownerId: Scalars['String']['output'];
+};
+
+export type WorkSpaceCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  ownerId: Scalars['String']['input'];
+};
+
 export type TodoCreateInput = {
-  description: Scalars['String']['input'];
+  categoryId?: InputMaybe<Scalars['ID']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
   priority: Scalars['String']['input'];
   status: Scalars['String']['input'];
   title: Scalars['String']['input'];
@@ -114,6 +217,7 @@ export type TodoCreateInput = {
 };
 
 export type TodoUpdateInput = {
+  categoryId?: InputMaybe<Scalars['ID']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   priority?: InputMaybe<Scalars['String']['input']>;
@@ -124,16 +228,17 @@ export type TodoUpdateInput = {
 export type GetAllUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllUserQuery = { __typename?: 'Query', getAllUsers: Array<{ __typename?: 'User', id: string, username: string, password: string, displayName?: string | null }> };
+export type GetAllUserQuery = { __typename?: 'Query', userQuery: { __typename?: 'User', getAllUsers?: Array<{ __typename?: 'User', id: string, username: string, displayName?: string | null }> | null } };
 
 
 export const GetAllUserDocument = gql`
     query GetAllUser {
-  getAllUsers {
-    id
-    username
-    password
-    displayName
+  userQuery {
+    getAllUsers {
+      id
+      username
+      displayName
+    }
   }
 }
     `;

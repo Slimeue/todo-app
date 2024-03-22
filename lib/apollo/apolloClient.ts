@@ -1,4 +1,10 @@
-import { ApolloClient, from, HttpLink, InMemoryCache } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloLink,
+  from,
+  HttpLink,
+  InMemoryCache,
+} from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -14,8 +20,19 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
+const authMiddleware = new ApolloLink((operation, forward) => {
+  const token = localStorage.getItem("token");
+  operation.setContext({
+    headers: {
+      authorization: token ? `Bearer ${token}` : "",
+    },
+  });
+  return forward(operation);
+});
+
 export const client = new ApolloClient({
   link: from([
+    authMiddleware,
     errorLink,
     new HttpLink({ uri: "http://localhost:6060/graphql" }),
   ]),
